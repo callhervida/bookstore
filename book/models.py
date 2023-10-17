@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 
 
 class Book(models.Model):
-    """A Model for blog post's information including content's title, content
-    author and Publication Date"""
 
     title = models.CharField(blank=True, null=True, max_length=100)
 
