@@ -1,5 +1,5 @@
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Book
@@ -18,3 +18,10 @@ class NewBook(CreateAPIView):
         return serializer.save(author=self.request.user)
 
 
+class GetBook(RetrieveAPIView):
+
+    authentication_classes = [TokenAuthentication]
+
+    queryset = Book.objects.all()
+
+    serializer_class = BookSerializer
