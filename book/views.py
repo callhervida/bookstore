@@ -1,5 +1,5 @@
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Book
@@ -20,8 +20,34 @@ class NewBook(CreateAPIView):
 
 class GetBook(RetrieveAPIView):
 
+    permission_classes = (IsAuthenticated,)
     authentication_classes = [TokenAuthentication]
+    lookup_field = 'id'
 
     queryset = Book.objects.all()
 
     serializer_class = BookSerializer
+
+
+class EditBook(UpdateAPIView):
+
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [TokenAuthentication]
+    lookup_field = 'id'
+
+    queryset = Book.objects.all()
+
+    serializer_class = BookSerializer
+
+
+class DeleteBook(DestroyAPIView):
+
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [TokenAuthentication]
+    lookup_field = 'id'
+
+    queryset = Book.objects.all()
+
+    serializer_class = BookSerializer
+
+
