@@ -14,4 +14,4 @@ class Book(models.Model):
 
     description = models.TextField(blank=True, null=True)
 
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(to=User, on_delete=models.CASCADE)
