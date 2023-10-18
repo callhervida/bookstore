@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
-    'book.apps.BookConfig'
+    'book.apps.BookConfig',
+    'cart.apps.CartConfig',
 ]
 
 MIDDLEWARE = [
