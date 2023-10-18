@@ -3,7 +3,17 @@ from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIVie
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Book
-from .serializers import BookSerializer
+from .serializers import BookSerializer, UserSerializer
+from django.contrib.auth.models import User
+
+
+class Registration(CreateAPIView):
+
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+    def perform_create(self, serializer):
+        return serializer.save()
 
 
 class NewBook(CreateAPIView):
