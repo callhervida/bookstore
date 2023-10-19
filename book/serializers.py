@@ -5,10 +5,16 @@ from django.contrib.auth.models import User
 from .models import Book
 
 
-class BookSerializer(serializers.ModelSerializer):
+class GetBookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         exclude = ('author', )
+
+
+class BookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = '__all__'
 
 
 class UserSerializer(serializers.ModelSerializer):

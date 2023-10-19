@@ -1,9 +1,12 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView, ListCreateAPIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import filters
 
 from .models import Book
-from .serializers import BookSerializer, UserSerializer
+from .serializers import GetBookSerializer, UserSerializer, BookSerializer
 from django.contrib.auth.models import User
 
 
@@ -18,7 +21,7 @@ class Registration(CreateAPIView):
 
 class NewBook(CreateAPIView):
 
-    serializer_class = BookSerializer
+    serializer_class = GetBookSerializer
     queryset = Book.objects.all()
 
     permission_classes = (IsAuthenticated,)
@@ -36,7 +39,7 @@ class GetBook(RetrieveAPIView):
 
     queryset = Book.objects.all()
 
-    serializer_class = BookSerializer
+    serializer_class = GetBookSerializer
 
 
 class EditBook(UpdateAPIView):
@@ -47,7 +50,7 @@ class EditBook(UpdateAPIView):
 
     queryset = Book.objects.all()
 
-    serializer_class = BookSerializer
+    serializer_class = GetBookSerializer
 
 
 class DeleteBook(DestroyAPIView):
@@ -58,6 +61,24 @@ class DeleteBook(DestroyAPIView):
 
     queryset = Book.objects.all()
 
+    serializer_class = GetBookSerializer
+
+
+class PaginationNumber(PageNumberPagination):
+    page_size = 5
+
+
+class SearchBook(ListCreateAPIView):
+
+    queryset = Book.objects.all()
     serializer_class = BookSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
+    search_fields = ['title', 'genre', 'author__username']
+    filterset_fields = ['genre']
+    ordering_fields = ['title', 'genre']
+    pagination_class = PaginationNumber
+
+
+
 
 
