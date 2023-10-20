@@ -76,35 +76,34 @@ class DeleteFromCart(APIView):
             status=200
         )
 
-    class DeleteCart(APIView):
-        permission_classes = (IsAuthenticated,)
-        authentication_classes = [TokenAuthentication]
 
-        def post(self, request):
+class ViewCart(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [TokenAuthentication]
 
-            user_id = request.user.id
+    def get(self, request):
 
-            cart_obj = Cart.objects.filter(owner=user_id).first()
+        user_id = request.user.id
 
-            if not cart_obj:
-                return Response(
-                    {
-                        'status': False,
-                        'message': 'item object does not exist!',
-                        'data': []
-                    },
-                    status=200
-                )
+        cart_obj = Cart.objects.filter(owner=user_id).first()
 
-            cart_obj.delete()
-
+        if not cart_obj:
             return Response(
                 {
-                    'status': True,
-                    'message': 'Item has been deleted',
+                    'status': False,
+                    'message': 'cart object does not exist!',
                     'data': []
                 },
                 status=200
             )
 
+        cart_items = Cart.get_cart_items(cart_obj)
 
+        return Response(
+            {
+                'status': True,
+                'message': 'Item has been deleted',
+                'data': cart_items
+            },
+            status=200
+        )

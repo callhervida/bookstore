@@ -19,7 +19,7 @@ class Cart(models.Model):
     date_ordered = models.DateTimeField(auto_now=True)
 
     def get_cart_items(self):
-        return self.items.all()
+        return self.items.all().values('product__title')
 
     def get_cart_total(self):
-        return sum([item.product for item in self.items.all()])
+        return sum([item.product.price for item in self.items.all()])
