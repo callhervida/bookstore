@@ -13,7 +13,6 @@ from django.contrib.auth.models import User
 
 
 class Registration(CreateAPIView):
-
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
@@ -22,7 +21,6 @@ class Registration(CreateAPIView):
 
 
 class NewBook(CreateAPIView):
-
     serializer_class = GetBookSerializer
     queryset = Book.objects.all()
 
@@ -34,7 +32,6 @@ class NewBook(CreateAPIView):
 
 
 class GetBook(RetrieveAPIView):
-
     permission_classes = (IsAuthenticated,)
     authentication_classes = [TokenAuthentication]
     lookup_field = 'id'
@@ -45,7 +42,6 @@ class GetBook(RetrieveAPIView):
 
 
 class EditBook(UpdateAPIView):
-
     permission_classes = (IsAuthenticated,)
     authentication_classes = [TokenAuthentication]
     lookup_field = 'id'
@@ -56,7 +52,6 @@ class EditBook(UpdateAPIView):
 
 
 class DeleteBook(DestroyAPIView):
-
     permission_classes = (IsAuthenticated,)
     authentication_classes = [TokenAuthentication]
     lookup_field = 'id'
@@ -71,7 +66,6 @@ class PaginationNumber(PageNumberPagination):
 
 
 class SearchBook(ListCreateAPIView):
-
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
@@ -81,9 +75,40 @@ class SearchBook(ListCreateAPIView):
     pagination_class = PaginationNumber
 
 
-class StoreComments(APIView):
+class CommentAndRate(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, ]
+
+    def get(self, request):
+
+        store_id = request.GET.get('store_id')
+
+        p = request.GET.get('page', 1)
+        r = request.GET.get('records_number', 10)
+
+        comment = Comment.objects.filter(store=store_id, store__status=3,
+                                         approved=True).order_by('-created_date')[
+                  int(r) * (int(p) - 1): int(r) * (int(p))]  # show 'r' records in each page order by last records
+
+        if not comment:
+            return Response(
+                {
+                    'status': False,
+                    'message': 'there is no comment to display',
+                    'data': []
+                },
+                status=200
+            )
+
+        comment_serialized = CommentSerializer(comment, many=True)
+
+        response_json = {
+            'status': True,
+            'message': 'successful',
+            'data': comment_serialized.data
+        }
+
+        return Response(response_json, status=200)
 
     def post(self, request):
 
@@ -163,9 +188,3 @@ class StoreComments(APIView):
             },
             status=200
         )
-
-
-
-
-
-
