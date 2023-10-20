@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from book.models import Book
-from .models import OrderItem, Order
+from .models import CartItem, Cart
 
 
 class AddToCart(APIView):
@@ -20,10 +20,10 @@ class AddToCart(APIView):
 
         book_obj = Book.objects.filter(id=book_id).first()
 
-        order_item, status = OrderItem.objects.get_or_create(product=book_obj)
+        order_item, status = CartItem.objects.get_or_create(product=book_obj)
 
         # create order associated with the user
-        user_order, status = Order.objects.get_or_create(owner=user, is_ordered=False)
+        user_order, status = Cart.objects.get_or_create(owner=user, is_ordered=False)
         user_order.items.add(order_item)
         if status:
             user_order.save()
@@ -44,7 +44,7 @@ class DeleteFromCart(APIView):
 
         item_id = request.data.get('item_id')
 
-        item_obj = OrderItem.objects.filter(id=item_id)
+        item_obj = CartItem.objects.filter(id=item_id)
 
         if not item_obj:
             return Response(
