@@ -39,12 +39,14 @@ class AddToCart(APIView):
 
 
 class DeleteFromCart(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [TokenAuthentication]
 
     def post(self, request):
 
         item_id = request.data.get('item_id')
 
-        item_obj = CartItem.objects.filter(id=item_id)
+        item_obj = CartItem.objects.filter(id=item_id).first()
 
         if not item_obj:
             return Response(
@@ -56,7 +58,14 @@ class DeleteFromCart(APIView):
                 status=200
             )
 
-        item_obj[0].delete()
+        item_obj.delete()
+
+        item_obj = CartItem.objects.all()
+
+        if not item_obj:
+            user_id = request.user.id
+            cart_obj = Cart.objects.filter(owner=user_id).first()
+            cart_obj.delete()
 
         return Response(
             {
@@ -66,3 +75,36 @@ class DeleteFromCart(APIView):
             },
             status=200
         )
+
+    class DeleteCart(APIView):
+        permission_classes = (IsAuthenticated,)
+        authentication_classes = [TokenAuthentication]
+
+        def post(self, request):
+
+            user_id = request.user.id
+
+            cart_obj = Cart.objects.filter(owner=user_id).first()
+
+            if not cart_obj:
+                return Response(
+                    {
+                        'status': False,
+                        'message': 'item object does not exist!',
+                        'data': []
+                    },
+                    status=200
+                )
+
+            cart_obj.delete()
+
+            return Response(
+                {
+                    'status': True,
+                    'message': 'Item has been deleted',
+                    'data': []
+                },
+                status=200
+            )
+
+
