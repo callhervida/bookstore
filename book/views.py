@@ -7,6 +7,8 @@ from rest_framework import filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django.db.models import Count, Avg
+
 from .models import Book, Comment
 from .serializers import GetBookSerializer, UserSerializer, BookSerializer, CommentSerializer
 from django.contrib.auth.models import User
@@ -81,12 +83,12 @@ class CommentAndRate(APIView):
 
     def get(self, request):
 
-        store_id = request.GET.get('store_id')
+        book_id = request.GET.get('book_id')
 
         p = request.GET.get('page', 1)
         r = request.GET.get('records_number', 10)
 
-        comment = Comment.objects.filter(store=store_id, store__status=3,
+        comment = Comment.objects.filter(book=book_id,
                                          approved=True).order_by('-created_date')[
                   int(r) * (int(p) - 1): int(r) * (int(p))]  # show 'r' records in each page order by last records
 
@@ -128,7 +130,7 @@ class CommentAndRate(APIView):
             )
 
         request_json = {
-            'store': book_id,
+            'book': book_id,
             'text': book_comment,
             'rate': rate,
             'user': user
@@ -147,12 +149,11 @@ class CommentAndRate(APIView):
 
         comment_serialized.save()
 
-        # calculate average rating and count of comments of the store
-        store_rating_average = Comment.objects.filter(store=book_id, store__status=3).aggregate(Avg('rate'),
+        rating_average = Comment.objects.filter(book=book_id).aggregate(Avg('rate'),
                                                                                                 Count('id'))
 
-        store_obj = Book.objects.filter(id=book_id, status=3).first()
-        if not store_obj:
+        book_obj = Book.objects.filter(id=book_id).first()
+        if not book_obj:
             return Response(
                 {
                     'status': False,
@@ -163,11 +164,11 @@ class CommentAndRate(APIView):
             )
 
         request_json = {
-            'count_comment': store_rating_average.get('id__count'),
-            "average_rate": round(store_rating_average.get('rate__avg'), 1)
+            'count_comment': rating_average.get('id__count'),
+            "average_rate": round(rating_average.get('rate__avg'), 1)
         }
 
-        book_serialized = BookSerializer(store_obj, data=request_json, partial=True)
+        book_serialized = BookSerializer(book_obj, data=request_json, partial=True)
 
         if not book_serialized.is_valid():
             return Response(
