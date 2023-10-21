@@ -121,20 +121,6 @@ class UserOrderListAPIView(ListAPIView):
         return UserOrder.objects.filter(owner=self.request.user)
 
 
-# class OrderCreateAPIView(CreateAPIView):
-#
-#     permission_classes = (IsAuthenticated,)
-#     authentication_classes = [TokenAuthentication]
-#     queryset = UserOrder.objects.all()
-#     serializer_class = UserOrderSerializer
-#
-#     def perform_create(self, serializer):
-#         user_cart = Cart.objects.filter(owner=self.request.user)
-#         items = [cart.items for cart in user_cart]
-#         serializer.save(owner=self.request.user, items=items)
-#         user_cart.delete()
-
-
 class OrderCreateAPIView(APIView):
     permission_classes = (IsAuthenticated,)
     authentication_classes = [TokenAuthentication]
@@ -184,6 +170,9 @@ class OrderCreateAPIView(APIView):
                             status=200
                         )
                     user_order_serializer.save()
+
+                    Book.objects.filter(id=product_id).update(quantity=book_quantity-1)
+
                 else:
                     request_json = {
                         'owner': user_id,
