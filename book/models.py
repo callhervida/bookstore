@@ -38,3 +38,10 @@ class Comment(models.Model):
     text = models.TextField(blank=True, null=True, verbose_name="متن")
 
     rate = models.IntegerField(default=5, blank=True, null=True, verbose_name="امتیاز")
+
+
+class Author(models.Model):
+    name = models.CharField(blank=True, null=True, max_length=100)
+    last_name = models.CharField(blank=True, null=True, max_length=100)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+    books = models.ManyToManyField(Book)
