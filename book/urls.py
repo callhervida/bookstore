@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
 
-from .views import NewBook, GetBook, EditBook, DeleteBook, SearchBook, Registration, CommentAndRate
+from .views import NewBook, GetBook, EditBook, DeleteBook, SearchBook, Registration, Comment
 
 urlpatterns = [
     path('login/', obtain_auth_token, name='login'),
@@ -11,6 +11,6 @@ urlpatterns = [
     path('edit-book/<int:id>/', EditBook.as_view()),
     path('delete-book/<int:id>/', DeleteBook.as_view()),
     path('search/', SearchBook.as_view()),
-    path('comment/', CommentAndRate.as_view()),
+    path('comment/', Comment.as_view()),
 ]
 

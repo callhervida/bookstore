@@ -40,6 +40,19 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Comment
         fields = '__all__'
+
+    text = serializers.CharField(max_length=100)
+    rate = serializers.IntegerField()
+
+    def create(self, validated_data):
+        return Comment.objects.create(**validated_data)
+
+    def validate(self, data):
+
+        if not data['rate']:
+            raise serializers.ValidationError("rate first")
+        return data

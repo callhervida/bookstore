@@ -17,8 +17,6 @@ class Book(models.Model):
 
     description = models.TextField(blank=True, null=True)
 
-    author = models.ForeignKey(to=User, on_delete=models.CASCADE)
-
     average_rate = models.FloatField(default=0, blank=True, null=True, verbose_name="میانگین امتیاز")
 
     count_comment = models.IntegerField(default=0, blank=True, null=True, verbose_name="تعداد نظرات")
@@ -37,7 +35,7 @@ class Comment(models.Model):
 
     text = models.TextField(blank=True, null=True, verbose_name="متن")
 
-    rate = models.IntegerField(default=5, blank=True, null=True, verbose_name="امتیاز")
+    rate = models.PositiveIntegerField(default=5, blank=True, null=True, verbose_name="امتیاز")
 
 
 class Author(models.Model):
