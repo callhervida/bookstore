@@ -13,7 +13,7 @@ class CartItem(models.Model):
 
 class Cart(models.Model):
     ref_code = models.CharField(max_length=15)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    # owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     is_ordered = models.BooleanField(default=False)
     items = models.ManyToManyField(CartItem)
     date_ordered = models.DateTimeField(auto_now=True)
@@ -26,6 +26,6 @@ class Cart(models.Model):
 
 
 class UserOrder(models.Model):
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    # owner = models.ForeignKey(User, on_delete=models.CASCADE)
     items = models.ManyToManyField(CartItem)
     ordered_on = models.DateTimeField(auto_now_add=True)

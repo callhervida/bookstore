@@ -26,8 +26,8 @@ class Comment(models.Model):
     book = models.ForeignKey(Book, on_delete=models.SET_NULL, blank=True, null=True, related_name='store_comment',
                               verbose_name="فروشگاه")
 
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name='user_comment',
-                             verbose_name="کاربر")
+    # user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name='user_comment',
+    #                          verbose_name="کاربر")
 
     created_date = models.DateTimeField(default=timezone.now, blank=True, null=True, verbose_name="تاریخ ایجاد")
 
@@ -38,8 +38,6 @@ class Comment(models.Model):
     rate = models.PositiveIntegerField(default=5, blank=True, null=True, verbose_name="امتیاز")
 
 
-class Author(models.Model):
-    name = models.CharField(blank=True, null=True, max_length=100)
-    last_name = models.CharField(blank=True, null=True, max_length=100)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
-    books = models.ManyToManyField(Book)
+# class Author(models.Model):
+#     # user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
+#     books = models.ManyToManyField(Book)

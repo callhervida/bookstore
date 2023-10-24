@@ -10,16 +10,8 @@ from rest_framework.views import APIView
 from django.db.models import Count, Avg
 
 from .models import Book, Comment
-from .serializers import GetBookSerializer, UserSerializer, BookSerializer, CommentSerializer
+from .serializers import GetBookSerializer, BookSerializer, CommentSerializer
 from django.contrib.auth.models import User
-
-
-class Registration(CreateAPIView):
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
-
-    def perform_create(self, serializer):
-        return serializer.save()
 
 
 class NewBook(CreateAPIView):
