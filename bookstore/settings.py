@@ -93,7 +93,7 @@ DATABASES = {
         'USER': get_env_value('DB_USER'),
         'PASSWORD': get_env_value('DB_PASS'),
         'HOST': 'localhost',
-        'PORT': '',
+        'PORT': '5432',
     }
 }
 
