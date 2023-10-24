@@ -1,8 +1,8 @@
-from rest_framework.authtoken.admin import User
+
 from rest_framework.generics import CreateAPIView
 
 from .serializers import UserSerializer
-# from .models import User
+from .models import User
 
 
 class Registration(CreateAPIView):
