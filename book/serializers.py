@@ -9,7 +9,7 @@ class GetBookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        exclude = ('author', )
+        fields = '__all__'
 
 
 class BookSerializer(serializers.ModelSerializer):
