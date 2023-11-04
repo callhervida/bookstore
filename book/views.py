@@ -15,7 +15,7 @@ from django.contrib.auth.models import User
 
 
 class IsAuthor(BasePermission):
-    message = 'adding books is restricted to the authors only'
+    message = 'editing books is restricted to the authors only'
 
     def has_object_permission(self, request, view, obj):
 
