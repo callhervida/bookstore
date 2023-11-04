@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
 
+from bookstore import settings
+
 
 class Book(models.Model):
 
@@ -21,6 +23,8 @@ class Book(models.Model):
 
     count_comment = models.IntegerField(default=0, blank=True, null=True, verbose_name="تعداد نظرات")
 
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+
 
 class Comment(models.Model):
     book = models.ForeignKey(Book, on_delete=models.SET_NULL, blank=True, null=True, related_name='store_comment',
@@ -37,7 +41,3 @@ class Comment(models.Model):
 
     rate = models.PositiveIntegerField(default=5, blank=True, null=True, verbose_name="امتیاز")
 
-
-# class Author(models.Model):
-#     # user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
-#     books = models.ManyToManyField(Book)

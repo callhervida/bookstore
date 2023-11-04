@@ -2,7 +2,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView, ListCreateAPIView
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, BasePermission, SAFE_METHODS
 from rest_framework import filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,6 +12,17 @@ from django.db.models import Count, Avg
 from .models import Book, Comment
 from .serializers import GetBookSerializer, BookSerializer, CommentSerializer
 from django.contrib.auth.models import User
+
+
+class IsAuthor(BasePermission):
+    message = 'adding books is restricted to the authors only'
+
+    def has_object_permission(self, request, view, obj):
+
+        if request.method in SAFE_METHODS:
+            return True
+
+        return obj.author == request.user
 
 
 class NewBook(CreateAPIView):
@@ -35,8 +46,8 @@ class GetBook(RetrieveAPIView):
     serializer_class = GetBookSerializer
 
 
-class EditBook(UpdateAPIView):
-    permission_classes = (IsAuthenticated,)
+class EditBook(UpdateAPIView, IsAuthor):
+    permission_classes = (IsAuthenticated, IsAuthor,)
     authentication_classes = [TokenAuthentication]
     lookup_field = 'id'
 

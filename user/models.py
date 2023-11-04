@@ -58,13 +58,7 @@ class User(AbstractUser):
     objects = CustomUserManager()
 
 
-class Author(User):
-    base_role = User.Role.AUTHOR
-
-    class Meta:
-        proxy = True
-
-
 class AuthorProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    books = models.ManyToManyField(Book)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.OneToOneField(Book, on_delete=models.SET_NULL, null=True)
+    is_active = models.BooleanField(default=False)
