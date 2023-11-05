@@ -9,20 +9,10 @@ from rest_framework.views import APIView
 
 from django.db.models import Count, Avg
 
+from user.permissions import IsAuthor
 from .models import Book, Comment
-from .serializers import GetBookSerializer, BookSerializer, CommentSerializer
+from .serializers import GetBookSerializer, CommentSerializer
 from django.contrib.auth.models import User
-
-
-class IsAuthor(BasePermission):
-    message = 'editing books is restricted to the authors only'
-
-    def has_object_permission(self, request, view, obj):
-
-        if request.method in SAFE_METHODS:
-            return True
-
-        return obj.author == request.user
 
 
 class NewBook(CreateAPIView):
@@ -72,7 +62,7 @@ class PaginationNumber(PageNumberPagination):
 
 class SearchBook(ListCreateAPIView):
     queryset = Book.objects.all()
-    serializer_class = BookSerializer
+    serializer_class = GetBookSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
     search_fields = ['title', 'genre']
     filterset_fields = ['genre']
@@ -203,4 +193,3 @@ class Comment(CreateAPIView):
 
     def perform_create(self, serializer):
         return serializer.save(user=self.request.user)
-
