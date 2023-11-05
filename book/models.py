@@ -1,7 +1,9 @@
 from django.utils import timezone
 
 from django.db import models
-from django.contrib.auth.models import User
+from user.models import User
+from django.db.models import Count, Avg
+
 
 from bookstore import settings
 
@@ -28,11 +30,23 @@ class Comment(models.Model):
     book = models.ForeignKey(Book, on_delete=models.SET_NULL, blank=True, null=True, related_name='store_comment',
                              verbose_name="فروشگاه")
 
-    # user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name='user_comment',
-    #                          verbose_name="کاربر")
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name='user_comment',
+                             verbose_name="کاربر")
 
     created_date = models.DateTimeField(default=timezone.now, blank=True, null=True, verbose_name="تاریخ ایجاد")
 
     approved = models.BooleanField(default=False, blank=True, null=True, verbose_name="تایید شده")
 
     text = models.TextField(blank=True, null=True, verbose_name="متن")
+
+    rate = models.PositiveIntegerField(default=5, blank=True, null=True)
+
+    def update_rate(self):
+        if not 0 < self.rate < 5:
+            return 'must be between 0-5'
+
+        rating_average = Comment.objects.filter(book=self.book).aggregate(Avg('rate'), Count('id'))
+        Book.objects.filter(id=self.book).update(
+            count_comment=rating_average.get('id__count'),
+            average_rate=round(rating_average.get('rate__avg'), 1)
+        )

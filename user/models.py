@@ -6,8 +6,6 @@ from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from book.models import Book
-
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, phone_number, password, **extra_fields):
@@ -78,5 +76,5 @@ class User(AbstractUser):
 
 class AuthorProfile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    book = models.OneToOneField(Book, on_delete=models.SET_NULL, null=True)
+    # book = models.OneToOneField(Book, on_delete=models.SET_NULL, null=True)
     is_active = models.BooleanField(default=False)
