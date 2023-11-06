@@ -27,8 +27,7 @@ class Book(models.Model):
 
 
 class Comment(models.Model):
-    book = models.ForeignKey(Book, on_delete=models.SET_NULL, blank=True, null=True, related_name='store_comment',
-                             verbose_name="فروشگاه")
+    book = models.ForeignKey(Book, on_delete=models.SET_NULL, blank=True, null=True)
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name='user_comment',
                              verbose_name="کاربر")
@@ -42,9 +41,6 @@ class Comment(models.Model):
     rate = models.PositiveIntegerField(default=5, blank=True, null=True)
 
     def update_rate(self):
-        if not 0 < self.rate < 5:
-            return 'must be between 0-5'
-
         rating_average = Comment.objects.filter(book=self.book).aggregate(Avg('rate'), Count('id'))
         Book.objects.filter(id=self.book).update(
             count_comment=rating_average.get('id__count'),

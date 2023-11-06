@@ -192,4 +192,5 @@ class Comment(CreateAPIView):
     authentication_classes = [TokenAuthentication]
 
     def perform_create(self, serializer):
+        print(serializer.validated_data)
         return serializer.save(user=self.request.user)
