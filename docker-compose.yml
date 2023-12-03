@@ -1,0 +1,16 @@
+version: '3.5'
+services:
+  content:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    container_name: bookstore
+    volumes:
+      - '/root/docker-compose/data/media/MEDIA/:/app/MEDIA'
+    ports:
+      - "8432:8432"
+    networks:
+      - content_private
+    restart: always
+networks:
+  content_private:
+    external: true
