@@ -40,3 +40,5 @@ class CommentSerializer(serializers.ModelSerializer):
         if not data['rate']:
             raise serializers.ValidationError("rate first")
         return data
+
+

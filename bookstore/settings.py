@@ -48,9 +48,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_filters',
     'rest_framework.authtoken',
+    'rest_framework',
     'book.apps.BookConfig',
     'cart.apps.CartConfig',
     'user.apps.UserConfig',
+    'celery',
+    'django_celery_beat',
+    'graphene_django',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -141,3 +146,9 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "user.User"
+
+CELERY_BROKER_URL = "redis://localhost:6379"
+# CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "django-db")
+CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_TIMEZONE = 'Asia/Tehran'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

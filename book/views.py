@@ -6,13 +6,85 @@ from rest_framework.permissions import IsAuthenticated, BasePermission, SAFE_MET
 from rest_framework import filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.http import JsonResponse
+from django.apps import apps
 from django.db.models import Count, Avg
-
+from django import forms
+import time
+from django.utils import timezone
 from user.permissions import IsAuthor
 from .models import Book, Comment
 from .serializers import GetBookSerializer, CommentSerializer
 from django.contrib.auth.models import User
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+#
+# class CreateBooksAPIView(APIView):
+#     def get(self, request):
+#         start_time = time.time()
+#
+#         books_data = []
+#         for i in range(1000):
+#             book_data = {
+#                 'title': f'Book {i+1}',
+#                 'price': 9.99,  # Set the price as needed
+#                 'quantity': 1,  # Set the quantity as needed
+#                 # Other fields for the Book model as needed
+#             }
+#             books_data.append(book_data)
+#
+#         books_serializer = BookSerializer(data=books_data, many=True)
+#         if books_serializer.is_valid():
+#             books = books_serializer.save()
+#
+#             # Create dynamic fields for each book
+#             for book in books:
+#                 DynamicField.objects.create(
+#                     name='pages',
+#                     value_number=1000,
+#                     content_object=book
+#                 )
+#             end_time = time.time()
+#             query_time = end_time - start_time
+#             print(f"Time taken for query: {query_time} seconds")
+#             return Response({'message': 'Successfully created 1000 books'}, status=status.HTTP_201_CREATED)
+#         return Response(books_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#
+# class RetrieveDynamicFieldsAPIView(APIView):
+#     def get(self, request):
+#         start_time = time.time()
+#         dynamic_fields = DynamicField.objects.filter(name='pages', value_number=1000)
+#         retrieved_fields = [{'id': field.id, 'name': field.name, 'value_number': field.value_number} for field in
+#                             dynamic_fields]
+#         end_time = time.time()
+#         query_time = end_time - start_time
+#         return Response(
+#             {'message': f"Time taken for query: {query_time} seconds", 'retrieved_fields': retrieved_fields},
+#             status=status.HTTP_200_OK)
+#
+#
+# class UpdateDynamicFieldsAPIView(APIView):
+#     def put(self, request, format=None):
+#         start_time = time.time()
+#         dynamic_fields = DynamicField.objects.filter(name='pages', value_number=1000)
+#         dynamic_fields.update(value_number=2000)  # Update value_number to 2000
+#         end_time = time.time()
+#         update_time = end_time - start_time
+#         return Response({'message': f"Time taken for update: {update_time} seconds"}, status=status.HTTP_200_OK)
+#
+#
+# class DeleteDynamicFieldsAPIView(APIView):
+#     def delete(self, request, format=None):
+#         start_time = time.time()
+#         dynamic_fields = DynamicField.objects.filter(name='pages', value_number=1000)
+#         dynamic_fields.delete()
+#         end_time = time.time()
+#         deletion_time = end_time - start_time
+#         return Response({'message': f"Time taken for deletion: {deletion_time} seconds"}, status=status.HTTP_200_OK)
+#
 
 
 class NewBook(CreateAPIView):
@@ -192,5 +264,48 @@ class Comment(CreateAPIView):
     authentication_classes = [TokenAuthentication]
 
     def perform_create(self, serializer):
-        print(serializer.validated_data)
-        return serializer.save(user=self.request.user)
+        book_id = self.request.data.get('book_id')
+        # book_obj = Book.objects.filter(id=int(book_id)).first()
+        return serializer.save(user=self.request.user, book=book_id)
+
+
+# Dynamic form generator
+# def get_dynamic_form(form_id):
+#     fields = DynamicFormField.objects.filter(id=form_id)
+#     form_fields = {}
+#     for field in fields:
+#         field_type = forms.CharField
+#         if field.field_type == 'number':
+#             field_type = forms.IntegerField
+#         elif field.field_type == 'email':
+#             field_type = forms.EmailField
+#
+#         form_fields[field.label] = field_type(required=field.required)
+#
+#     return type('DynamicForm', (forms.Form,), form_fields)
+#
+#
+# class DynamicFormAPIView(APIView):
+#     def get(self, request, form_id):
+#         # Retrieve the form fields based on the form_id
+#         form_fields = DynamicFormField.objects.filter(id=form_id)
+#
+#         # Create a list to hold form field details
+#         fields_data = []
+#         for field in form_fields:
+#             fields_data.append({
+#                 'label': field.label,
+#                 'field_type': field.field_type,
+#                 'required': field.required,
+#             })
+#
+#         # Create the dynamic form class
+#         DynamicForm = get_dynamic_form(form_id)
+#
+#         # Serialize the form fields data
+#         serialized_fields = {
+#             'form_fields': fields_data,
+#             # Here, you might include additional form metadata if needed
+#         }
+#
+#         return Response(serialized_fields, status=status.HTTP_200_OK)
